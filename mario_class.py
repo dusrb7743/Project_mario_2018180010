@@ -20,14 +20,14 @@ class Stage1_Left_Background:
         self.image = load_image("World_Left.png")
 
     def draw(self):
-        self.image.draw(3000 - mario.x, background_Height - 400)
+        self.image.draw(3300 - mario.x, background_Height - 400)
 
 class Stage1_Right_Background:
     def __init__(self):
         self.image = load_image("World_Right.png")
 
     def draw(self):
-        self.image.draw(8628 - mario.x, background_Height -400)
+        self.image.draw(8928 - mario.x, background_Height - 400)
 
 class Block:            # 미정
     def __init__(self):
@@ -44,19 +44,23 @@ class Enemies:
         self.G_y = 145
         self.G_frame = 0.0
 
+    def B_B(self):
+        return self.G_x - 30, self.G_y - 45, self.G_x + 30, self.G_y + 45
+
     def Goomba_update(self):
         self.G_frame = (self.G_frame + FRAMES_PER_ACTION * ACTION_PER_TIME * frame_time / 2) % 2
         self.G_x = self.G_x - Goomba_SPEED_PPS * frame_time
 
     def Goomba_draw(self, a):
         self.image.clip_draw(0 + int(self.G_frame) * 115, 915, 100, 100, a + 300 + self.G_x - mario.x, self.G_y)
+        draw_rectangle(a + 300 + self.G_x - mario.x - 35, self.G_y - 35, a + 300 + self.G_x - mario.x + 35, self.G_y + 35)
 
 
 class Mario:
     def __init__(self):
         self.image = load_image("mario_sheet2.png")
-        self.x, self.y = 300, 145
-        self.cx = self.x        
+        self.x, self.y = 500, 145
+        self.cx = self.x
         self.cy = self.y
         self.dir = 0            # 방향값 ,  속도 = 방향 * 20
         self.turn = 0           # 얼굴돌리는 방향값
@@ -68,6 +72,8 @@ class Mario:
         self.gravity = 0        # 중력값
         self.ground_y = 145       # 현재 서있는 땅의 y값
 
+    def B_B(self):  # 바운딩 박스
+        return self.x - 30, self.y - 45, self.x + 30, self.y + 45
 
     def update(self):
         self.cx = self.x
@@ -143,6 +149,11 @@ class Mario:
         else:
             self.image.clip_draw(800, 910, 120, 90, 500, self.y)
 
+        draw_rectangle(*self.B_B())
+        draw_rectangle(470, self.y - 45, 530, self.y + 45)
+
+
+
 
 def handle_events():
     global running
@@ -168,6 +179,7 @@ def handle_events():
 
 
 open_canvas(background_Width, background_Height)
+
 St1_L_background = Stage1_Left_Background()
 St1_R_background = Stage1_Right_Background()
 block = Block()
@@ -176,6 +188,7 @@ enemies = Enemies()
 
 frame_time = 0.0
 current_time = time.time()
+font = load_font('ENCR10B.TTF', 30)
 running = True
 
 while running:
@@ -198,6 +211,8 @@ while running:
     frame_time = time.time() - current_time
     frame_rate = 1.0 / frame_time
     current_time += frame_time
+
+    #font.draw(150, 150, 'TIME: %d' % get_time(), (255, 255, 255))
 
     delay(0.01)
 
